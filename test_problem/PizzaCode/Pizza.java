@@ -69,7 +69,7 @@ class Pizza {
         Interprete interprete = setInterprete();
 
         // El algoritmo realiza las operaciones y las guarda en su variable de instancia solucion
-        Algoritmo algoritmo = new Algoritmo(interprete);
+        Algoritmo algoritmo = new Algoritmo(interprete.getPizza(), interprete.getR(), interprete.getC(), interprete.getL(), interprete.getH());
 
         // Se guardan los resultados en el archivo de salida
         Impresor.archivoSalida(archivoEntrada, algoritmo.getSolucion());
