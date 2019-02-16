@@ -1,7 +1,7 @@
 import sys
 import os.path
 from enum import Enum
-
+import copy
 import numpy as np
 
 
@@ -25,16 +25,20 @@ def dummy_find(R, C, L, H, pizza):
     for row in range(R):
         for col in range(C):
             current_slice = {"T": 0, "M": 0, "coords": []}
-            slices = define_slice(current_slice, row, col, R, C, L, H, pizza)
+            possible_slices = define_slice(
+                copy.deepcopy(current_slice), row, col, R, C, L, H, copy.deepcopy(pizza)
+            )
+            # TODO:
+            # Check which one/s of the possible_slices should we use
             import pdb
 
             pdb.set_trace()
 
 
 def define_slice(current_slice, row, col, R, C, L, H, pizza):
-    # print(f"->{(row, col)}")
+    print(f"->{(row, col)}")
     pizza, current_slice = add_cells_into_slice(
-        current_slice.copy(), row, col, pizza.copy()
+        copy.deepcopy(current_slice), row, col, copy.deepcopy(pizza)
     )
     # print(pizza)
     valid_coordinates = find_valid_adjacent_cells(row, col, R, C, L, H, pizza)
@@ -45,9 +49,17 @@ def define_slice(current_slice, row, col, R, C, L, H, pizza):
         return [None]
     # Update current slice
     slices = []
+    # print(valid_coordinates)
     for coord in valid_coordinates:
-        for s in define_slice(current_slice, *coord, R, C, L, H, pizza):
+        print(current_slice)
+        print(slices)
+        print(f"{coord}->")
+        for s in define_slice(
+            copy.deepcopy(current_slice), *coord, R, C, L, H, copy.deepcopy(pizza)
+        ):
             if s:
+                # import pdb
+                # pdb.set_trace()
                 slices.append(s)
 
     return slices
@@ -56,6 +68,8 @@ def define_slice(current_slice, row, col, R, C, L, H, pizza):
 def add_cell(current_slice, row, col, pizza):
     current_slice[pizza[row, col]] += 1
     pizza[row, col] = "X"
+    assert (row, col) not in current_slice["coords"], "This is not working (add cell)"
+
     current_slice["coords"].append((row, col))
     return current_slice
 
