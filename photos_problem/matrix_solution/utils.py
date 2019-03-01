@@ -22,3 +22,12 @@ def read_file(file_path):
     ]
     assert N == len(photos_list)
     return photos_list
+
+
+def score(photo1, photo2):
+    set_1 = set(photo1["tags"])
+    set_2 = set(photo2["tags"])
+    num_common_tags_1_and_2 = len(set_1.intersection(set_2))
+    num_set_1_not_set_2 = len(set_1 - set_2)
+    num_set_2_not_set_1 = len(set_2 - set_1)
+    return min(num_common_tags_1_and_2, num_set_1_not_set_2, num_set_2_not_set_1)

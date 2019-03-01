@@ -1,0 +1,10 @@
+La idea seria ir ordenando en grupos de tags.
+
+Se busca el tag que mas fotos tienen (el mas comun)
+una vez encontrado se filtran todas las fotos que NO tienen el tag
+con lo que nos quedariamos con las que si tienen el tag
+
+de ese subcojunto se busca el tag mas usado, y se repite el mismo proceso.
+
+tras iterar varias veces este procedimiento nos quedariamos con un conjunto de fotos con bastantes
+tags en comun. (pero eso no implica tener muchos puntos)
