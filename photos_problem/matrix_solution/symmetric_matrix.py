@@ -6,7 +6,7 @@ import sys
 class SymmetricMatrix:
     def __init__(self, N, dtype=np.int16, mem_limit=1000, store_diagonal=False):
         """Class that represents a symmetric matrix.
-        The underlaying representation is an array.
+        The underlying representation is an array.
 
         Arguments:
             N {int} -- Number of rows/cols. The matrix is always square NxN
@@ -22,11 +22,10 @@ class SymmetricMatrix:
         expected_size = self.calculate_expected_size(N, dtype, store_diagonal)
         print(f"Expected size = {expected_size} MB")
         if expected_size >= mem_limit:
-            print(f"Mem limit exceeded")
-            return
+            raise Exception(f"Mem limit exceeded")
         matrix_size = self.num_matrix_elements(N, store_diagonal)
-        self.matrix = np.arange(matrix_size, dtype=dtype)
-        # self.matrix = np.zeros(matrix_size, dtype=dtype)
+        # self.matrix = np.arange(matrix_size, dtype=dtype)
+        self.matrix = np.ones(matrix_size, dtype=dtype) * -1
 
     def matrix_size_in_memory(self):
         # Returns Mbytes
@@ -34,7 +33,13 @@ class SymmetricMatrix:
 
     def calculate_expected_size(self, N, dtype, store_diagonal):
         # Returns MB
-        size_type = {str(np.int16): 16 / 8, str(np.int32): 32 / 8, str(np.int8): 1}
+        size_type = {
+            str(np.int16): 16 / 8,
+            str(np.int32): 32 / 8,
+            str(np.int8): 1,
+            str(np.uint16): 16 / 8,
+            str(np.uint8): 1,
+        }
         N = self.num_matrix_elements(N, store_diagonal)
         return (N * size_type[str(dtype)]) / 1e6
 
@@ -57,10 +62,9 @@ class SymmetricMatrix:
         Returns:
             int -- number of elements in row.
         """
-
         if row < 0:
             return 0
-        return N - row + 0 if store_diagonal else 1
+        return N - row - (0 if store_diagonal else 1)
 
     def sum_n_numbers(self, N):
         # Check https://en.wikipedia.org/wiki/1_%2B_2_%2B_3_%2B_4_%2B_%E2%8B%AF
@@ -86,6 +90,20 @@ class SymmetricMatrix:
         )
         total_offset_from_col = col - num_elements_removed_from_row
         return total_offset_from_row + total_offset_from_col
+
+    def get_coordinates(self, pos, store_diagonal):
+        # The opossite of the method above.
+        # Returns the row,col of a position of the underlying array
+        # See: https://stackoverflow.com/questions/27086195/linear-index-upper-triangular-matrix
+        # and:  https://stackoverflow.com/questions/19143657/linear-indexing-in-symmetric-matrices
+        N = self.N
+        if not store_diagonal:
+            row = N - 2 - int(np.sqrt(-8 * pos + 4 * N * (N - 1) - 7) / 2.0 - 0.5)
+            col = pos + row + 1 - N * (N - 1) / 2 + (N - row) * ((N - row) - 1) / 2
+        else:
+            row = int((2 * n + 1 - np.sqrt((2 * N + 1) * (2 * N + 1) - 8 * pos)) / 2)
+            col = k - n * row + row * (row - 1) / 2
+        return int(row), int(col)
 
     def check_if_valid_indexes(self, N, row, col, store_diagonal):
         """Checks if the provided row,col of the matrix is valid or out of bounds
@@ -114,6 +132,17 @@ class SymmetricMatrix:
             return False
         return True
 
+    def set_value(self, row, col, value):
+        if not self.check_if_valid_indexes(self.N, row, col, self.store_diagonal):
+            # Check if swapping indexes work or fail
+            row, col = (col, row)
+            if not self.check_if_valid_indexes(self.N, row, col, self.store_diagonal):
+                raise IndexError(f"Wrong indexes {(col, row)}")
+        pos = self.get_position_in_array(self.N, row, col, self.store_diagonal)
+        if pos < 0:
+            raise IndexError(f"pos={pos} not valid {(row, col)}")
+        self.matrix[pos] = value
+
     def __getitem__(self, slice_tuple):
         """Allows to use this class as a matrix.
         For example:
@@ -129,7 +158,6 @@ class SymmetricMatrix:
         Returns:
             int -- element corresponding to the position in the matrix (row,col)
         """
-
         if not type(slice_tuple) == type((1, 1)):
             raise TypeError("Use a tuple as slice")
         row, col = slice_tuple
@@ -137,8 +165,8 @@ class SymmetricMatrix:
             # Check if swapping indexes work or fail
             row, col = (col, row)
             if not self.check_if_valid_indexes(self.N, row, col, self.store_diagonal):
-                raise IndexError("Wrong indexes")
+                raise IndexError(f"Wrong indexes {(col, row)}")
         pos = self.get_position_in_array(self.N, row, col, self.store_diagonal)
         if pos < 0:
-            raise IndexError()
+            raise IndexError(f"pos={pos} not valid {(row, col)}")
         return self.matrix[pos]
