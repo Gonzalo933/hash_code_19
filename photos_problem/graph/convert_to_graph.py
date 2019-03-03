@@ -5,6 +5,8 @@ from functools import partial
 from multiprocessing import Pool, current_process
 import time
 import tqdm
+import numpy as np
+from operator import itemgetter
 
 
 def main(file_path):
@@ -13,7 +15,9 @@ def main(file_path):
     horizontal_photos = list(filter(utils.is_horizontal, photos_list))
     # For debug
     # horizontal_photos = horizontal_photos[0:1000]
-
+    sample_size = 500
+    indexes = np.random.choice(len(horizontal_photos), sample_size)
+    horizontal_photos = list(itemgetter(*indexes)(horizontal_photos))
     N = len(horizontal_photos)
     # Using mixed format: https://gephi.org/users/supported-graph-formats/csv-format/
     lines_to_write = []

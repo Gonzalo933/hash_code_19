@@ -11,3 +11,28 @@ tags en comun. (pero eso no implica tener muchos puntos)
 
 despues dentro de cada grupo, cuando sea de un tamaño manejable, se podria calcular el score
 entre todos los pares de fotos (ya no seria tan costoso)
+
+
+-------------------------------------
+
+Usar simulated annealing.
+Cada estado seria cada diferente permutacion posible de los slides.
+Ir explorando estados. Si el estado es peor, cambiar con cierta probabilidad.
+si es mejor, cambiar siempre.
+
+------------------------------------
+
+Una variacion para el simulated annealing seria que cada estado fuera incluir un nuevo nodo.
+Y una vez que esten incluido todos, seria cambiar de sitio alguna slide aleatoriamente
+
+------------------------------------
+
+A lo bruto con Pyspark?
+
+------------------------------------
+
+Las soluciones que hemos seguido hasta ahora implican carcular la matriz de scores enteras
+de cada una de las fotos con el resto.
+
+Con esta matriz se podria hacer un grafo y la solucion al problema seria el camino que mas score da
+

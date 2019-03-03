@@ -14,7 +14,7 @@ def is_vertical(photo):
 
 
 def write_file(photos_list):
-    with open(sys.argv[-1] + ".out", "w") as f:
+    with open(f"out/{sys.argv[-1]}.out", "w") as f:
         f.write(str(len(photos_list)) + "\n")
         for photo in photos_list:
             if type(photo["id"]) == list:
@@ -38,8 +38,8 @@ def main(file_path):
     vertical_photos = list(filter(is_vertical, photos_list))
     if not len(vertical_photos) % 2:
         vertical_photos = vertical_photos[1:]
-    new_horizontals = merge_vertical_photos(vertical_photos.copy(), 0)
-    photos_list = horizontal_photos + new_horizontals
+    # new_horizontals = merge_vertical_photos(vertical_photos.copy(), 0)
+    photos_list = horizontal_photos  #  + new_horizontals
     grouped_photos = []
     group_size = 100
     for i in range(0, len(photos_list), group_size):
