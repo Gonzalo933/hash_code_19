@@ -8,3 +8,6 @@ de ese subcojunto se busca el tag mas usado, y se repite el mismo proceso.
 
 tras iterar varias veces este procedimiento nos quedariamos con un conjunto de fotos con bastantes
 tags en comun. (pero eso no implica tener muchos puntos)
+
+despues dentro de cada grupo, cuando sea de un tamaño manejable, se podria calcular el score
+entre todos los pares de fotos (ya no seria tan costoso)
